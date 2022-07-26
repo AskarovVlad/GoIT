@@ -1,8 +1,9 @@
-import pickle
+# import pickle
 from addressbook import *
 
 
-CONTACT_BOOK = AddressBook()
+FILE_NAME = 'address-book.bin'
+BOOK = AddressBook()
 
 
 def input_error(func):
@@ -29,41 +30,29 @@ def hello(*args):
 
 @input_error
 def contact_add(user_data):
-    global CONTACT_BOOK
-    name = user_data.split()[1]
-    contact = user_data.split()[2]
-
-    if name in CONTACT_BOOK:
-        print(f"-The name '{name}' already exists in the phone book. "
-              f"\n If you want to change the contact enter: change 'contact name' 'phone number'")
-    else:
-        if not contact.replace('-', '').replace('+', '').isdigit():
-            raise ValueError
-        CONTACT_BOOK[name] = contact
-        print(f"-You successfully add '{name}' with phone number '{contact}' in phone book")
+    global BOOK
+    return BOOK.add_record(*user_data)
 
 
 @input_error
 def show_all(*args):
-    if len(CONTACT_BOOK) == 0:
+    if len(BOOK.data) == 0:
         print("-There are no contacts in the phone book. "
               "\n If you want to add a contact, enter: add 'name' 'phone number'")
-    else:
-        print(f"-Contact book have {len(CONTACT_BOOK)} contacts:")
-        [print('- ', name, contact) for name, contact in CONTACT_BOOK.items()]
+    return BOOK.iterator(args)
 
 
 @input_error
 def change_contact(user_data):
-    name = user_data.split()[1]
-    contact = user_data.split()[2]
+    name = user_data[0]
+    contact = user_data[1]
 
-    if len(CONTACT_BOOK) == 0:
+    if len(BOOK) == 0:
         print("-There are no contacts in the phone book. "
               "\n If you want to add a contact, enter: add 'name' 'phone number'")
-    elif name in CONTACT_BOOK:
-        old_num = CONTACT_BOOK[name]
-        CONTACT_BOOK[name] = contact
+    elif name in BOOK:
+        old_num = BOOK[name]
+        BOOK[name] = contact
         print(f"-You have successfully changed contact {name} with phone number '{old_num}' at '{contact}'")
     else:
         raise ValueError
@@ -71,13 +60,13 @@ def change_contact(user_data):
 
 @input_error
 def show_phone(user_data):
-    name = user_data.split()[1]
+    name = user_data[0]
 
-    if len(CONTACT_BOOK) == 0:
+    if len(BOOK) == 0:
         print("-There are no contacts in the phone book. "
               "\n If you want to add a contact, enter: add 'name' 'phone number'")
-    elif name in CONTACT_BOOK:
-        print(name, CONTACT_BOOK[name])
+    elif name in BOOK:
+        print(name, BOOK[name])
     else:
         raise ValueError
 
@@ -108,11 +97,11 @@ COMMANDS = {'hello': hello,
 @input_error
 def handler(user_input):
 
-    if not user_input.startswith(tuple(COMMANDS.keys())):
+    if not user_input.lower().startswith(tuple(COMMANDS.keys())):
         raise KeyError
     else:
-        command = user_input.split()[0]
-        data = user_input
+        command = user_input.split()[0].lower()
+        data = user_input.split()[1:]
         return COMMANDS[command](data)
 
 

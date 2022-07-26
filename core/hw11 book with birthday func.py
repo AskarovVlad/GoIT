@@ -34,7 +34,7 @@ class Phone(Field):
 
     @staticmethod
     def verify_phone(value):
-        clean_phone = value.replace('+38', '', 1)
+        clean_phone = value.replace('38', '', 1) if value.startswith('38') else value.replace('+38', '', 1)
 
         if len(value) > 13 or len(value) < 10:
             raise ValueError("Invalid phone number length. Please enter a valid phone in the range 10-13 numbers.")
@@ -128,9 +128,17 @@ class Record:
         return f"{self.name} {self.phones} {self.birthday}"
 
     def add_phone(self, phone: Phone):
-        return self.phones.append(phone)
+        if isinstance(phone, Phone):
+            return self.phones.append(phone)
+
+        return self.phones.append(Phone(phone))
 
     def change_phone(self, old_phone: Phone, new_phone: Phone):
+        if not isinstance(old_phone, Phone):
+            old_phone = Phone(old_phone)
+        if not isinstance(new_phone, Phone):
+            new_phone = Phone(new_phone)
+
         for phone in self.phones:
             if old_phone.value == phone.value:
                 self.phones.remove(phone)
@@ -140,6 +148,9 @@ class Record:
             return "Old phone number not found"
 
     def remove_phone(self, phone: Phone):
+        if not isinstance(phone, Phone):
+            phone = Phone(phone)
+
         for phone_number in self.phones:
             if phone_number.value == phone.value:
                 self.phones.remove(phone_number)
@@ -170,12 +181,20 @@ class AddressBook(UserDict):
         return f"{self.data}"
 
     def add_record(self, record: Record):
+        if not isinstance(record, Record):
+            record = Record(record)
+
         if record.name.value not in self.data:
             return self.data.update({record.name.value: record})
         else:
             return f"""Name '{record.name.value}' already exist in address book."""
 
     def change_record(self, old_record: Record, new_record: Record):
+        if not isinstance(old_record, Record):
+            old_record = Record(old_record)
+        if not isinstance(new_record, Record):
+            new_record = Record(new_record)
+
         if old_record.name.value not in self.data:
             return "Record not found"
         return self.data.update({old_record.name.value: new_record})
@@ -196,6 +215,8 @@ class AddressBook(UserDict):
         return self.data.get(value, "Record not found")
 
     def remove_record(self, record: Record):
+        if not isinstance(record, Record):
+            record = Record(record)
         return self.data.pop(record.name.value, "Record not found")
 
 
@@ -263,5 +284,5 @@ print(30, a.find_record('Lilly'))
 it = a.iterator(2)
 print(31, next(it))
 print(32, next(it))
-# print(33, next(it))
-# # print(34, next(it))
+a.add_record(Record(*['Max', '380932683795']))
+print(33, a)

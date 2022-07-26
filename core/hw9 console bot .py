@@ -26,14 +26,25 @@ def hello(*args):
 @input_error
 def contact_add(user_data):
     global CONTACT_BOOK
-    name = user_data.split()[1]
-    contact = user_data.split()[2]
+    name = user_data[0]
+    contact = user_data[1]
 
     if name in CONTACT_BOOK:
         print(f"-The name '{name}' already exists in the phone book. "
               f"\n If you want to change the contact enter: change 'contact name' 'phone number'")
     else:
         if not contact.replace('-', '').replace('+', '').isdigit():
+            raise ValueError
+
+        clean_phone = contact.replace('38', '', 1) if contact.startswith('38') else contact.replace('+38', '', 1)
+
+        if len(contact) > 13 or len(contact) < 10:
+            raise ValueError
+        if not clean_phone.isdigit():
+            raise ValueError
+        if len(clean_phone) != 10:
+            raise ValueError
+        if not clean_phone.startswith('0'):
             raise ValueError
         CONTACT_BOOK[name] = contact
         print(f"-You successfully add '{name}' with phone number '{contact}' in phone book")
@@ -51,8 +62,8 @@ def show_all(*args):
 
 @input_error
 def change_contact(user_data):
-    name = user_data.split()[1]
-    contact = user_data.split()[2]
+    name = user_data[0]
+    contact = user_data[1]
 
     if len(CONTACT_BOOK) == 0:
         print("-There are no contacts in the phone book. "
@@ -67,7 +78,7 @@ def change_contact(user_data):
 
 @input_error
 def show_phone(user_data):
-    name = user_data.split()[1]
+    name = user_data[0]
 
     if len(CONTACT_BOOK) == 0:
         print("-There are no contacts in the phone book. "
@@ -104,11 +115,11 @@ COMMANDS = {'hello': hello,
 @input_error
 def handler(user_input):
 
-    if not user_input.startswith(tuple(COMMANDS.keys())):
+    if not user_input.lower().startswith(tuple(COMMANDS.keys())):
         raise KeyError
     else:
-        command = user_input.split()[0]
-        data = user_input
+        command = user_input.split()[0].lower()
+        data = user_input.split()[1:]
         return COMMANDS[command](data)
 
 
@@ -118,7 +129,7 @@ def main():
     \nIf you want to see my feature set input: showcommands""")
 
     while True:
-        user_command = input('>>> ').lower()
+        user_command = input('>>> ')
         if user_command.startswith(EXIT):
             exit_func()
             break
@@ -126,4 +137,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
