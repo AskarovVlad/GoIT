@@ -31,15 +31,16 @@ def hello(*args):
 @input_error
 def contact_add(user_data):
     global BOOK
-    return BOOK.add_record(*user_data)
+
+    return BOOK.add_record(user_data)
 
 
 @input_error
 def show_all(*args):
     if len(BOOK.data) == 0:
         print("-There are no contacts in the phone book. "
-              "\n If you want to add a contact, enter: add 'name' 'phone number'")
-    return BOOK.iterator(args)
+              "\n If you want to add a contact, enter: add 'name' 'phone number' 'birthday'- optional parameter")
+    print(BOOK.data)
 
 
 @input_error
@@ -111,12 +112,11 @@ def main():
     \nIf you want to see my feature set input: showcommands""")
 
     while True:
-        user_command = input('>>> ').lower()
-        if user_command.startswith(EXIT):
+        user_command = input('>>> ')
+        if user_command.lower().startswith(EXIT):
             exit_func()
             break
         handler(user_command)
 
 if __name__ == "__main__":
     main()
-

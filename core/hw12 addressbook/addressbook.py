@@ -127,13 +127,13 @@ class Record:
     def __repr__(self):
         return f"{self.name} {self.phones} {self.birthday}"
 
-    def add_phone(self, phone: Phone):
+    def add_phone(self, phone):
         if isinstance(phone, Phone):
             return self.phones.append(phone)
 
         return self.phones.append(Phone(phone))
 
-    def change_phone(self, old_phone: Phone, new_phone: Phone):
+    def change_phone(self, old_phone, new_phone):
         if not isinstance(old_phone, Phone):
             old_phone = Phone(old_phone)
         if not isinstance(new_phone, Phone):
@@ -147,7 +147,7 @@ class Record:
         else:
             return "-Old phone number not found"
 
-    def remove_phone(self, phone: Phone):
+    def remove_phone(self, phone):
         if not isinstance(phone, Phone):
             phone = Phone(phone)
 
@@ -174,13 +174,20 @@ class Record:
 
 class AddressBook(UserDict):
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__ = state
+
     def __str__(self):
         return f"{self.data}"
 
     def __repr__(self):
         return f"{self.data}"
 
-    def add_record(self, record: Record):
+    def add_record(self, record):
         if not isinstance(record, Record):
             record = Record(record)
 
@@ -190,7 +197,7 @@ class AddressBook(UserDict):
         else:
             return f"""-Name '{record.name.value}' already exist in address book."""
 
-    def change_record(self, old_record: Record, new_record: Record):
+    def change_record(self, old_record, new_record):
         if not isinstance(old_record, Record):
             old_record = Record(old_record)
         if not isinstance(new_record, Record):
@@ -225,7 +232,11 @@ class AddressBook(UserDict):
     def find_record(self, value: Name):
         return self.data.get(value, "-Record not found")
 
-    def remove_record(self, record: Record):
+    def remove_record(self, record):
         if not isinstance(record, Record):
             record = Record(record)
         return self.data.pop(record.name.value, "-Record not found")
+
+a = AddressBook()
+a.add_record('Lesia +380932683795 25/07/96')
+print(a)

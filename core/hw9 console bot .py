@@ -130,7 +130,7 @@ def main():
 
     while True:
         user_command = input('>>> ')
-        if user_command.startswith(EXIT):
+        if user_command.lower().startswith(EXIT):
             exit_func()
             break
         handler(user_command)
