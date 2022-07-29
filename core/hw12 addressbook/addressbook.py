@@ -189,11 +189,11 @@ class AddressBook(UserDict):
 
     def add_record(self, record):
         if not isinstance(record, Record):
-            record = Record(record)
+            record = Record(*record)
 
         if record.name.value not in self.data:
-            print(f"-You successfully add {record} in address book")
-            return self.data.update({record.name.value: record})
+            self.data.update({record.name.value: record})
+            return f"-You successfully add {record} in address book"
         else:
             return f"""-Name '{record.name.value}' already exist in address book."""
 
@@ -205,12 +205,12 @@ class AddressBook(UserDict):
 
         if old_record.name.value not in self.data:
             return "-Record not found"
-        print(f"-You successfully changed {old_record} in address book")
-        return self.data.update({old_record.name.value: new_record})
+        self.data.update({old_record.name.value: new_record})
+        return f"-You successfully changed {old_record} in address book"
 
     @staticmethod
     def verify_number(n):
-        if not n.isdigit():
+        if not isinstance(n, int):
             raise ValueError("The number of output pages must be number.")
         if n <= 0:
             raise ValueError("The number of output pages must not be less than or equal to 0")
@@ -227,7 +227,8 @@ class AddressBook(UserDict):
                 result = '\n'.join([f'{record[0]}: {record[1]}' for record in records[:n]])
                 records = records[n:]
                 yield result
-            raise StopIteration("StopIterationError. The whole book is on screen.")
+
+        raise StopIteration("StopIterationError. The whole book is on screen.")
 
     def find_record(self, value: Name):
         return self.data.get(value, "-Record not found")
@@ -238,5 +239,9 @@ class AddressBook(UserDict):
         return self.data.pop(record.name.value, "-Record not found")
 
 a = AddressBook()
-a.add_record('Lesia +380932683795 25/07/96')
+print(a.add_record(['Lesia', '+380932683795', '25.07.1996']))
+print(a.add_record(['Vlad', '+380932683795', '25.07.1995']))
+print(a.add_record(['Jack', '+380932683795', '25.07.1994']))
 print(a)
+lst = a.iterator(5)
+print(next(lst))
