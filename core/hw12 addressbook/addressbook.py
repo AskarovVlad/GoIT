@@ -1,3 +1,4 @@
+#from pathlib import Path
 from collections import UserDict
 from datetime import datetime
 
@@ -136,6 +137,7 @@ class Record:
     def change_phone(self, old_phone, new_phone):
         if not isinstance(old_phone, Phone):
             old_phone = Phone(old_phone)
+
         if not isinstance(new_phone, Phone):
             new_phone = Phone(new_phone)
 
@@ -193,25 +195,22 @@ class AddressBook(UserDict):
 
         if record.name.value not in self.data:
             self.data.update({record.name.value: record})
-            return f"-You successfully add {record} in address book"
+            return f"-You successfully add contact {record} in address book"
         else:
             return f"""-Name '{record.name.value}' already exist in address book."""
 
-    def change_record(self, old_record, new_record):
-        if not isinstance(old_record, Record):
-            old_record = Record(old_record)
-        if not isinstance(new_record, Record):
-            new_record = Record(new_record)
-
-        if old_record.name.value not in self.data:
+    def change_record(self, name, old_phone, new_phone):
+        if name not in self.data:
             return "-Record not found"
-        self.data.update({old_record.name.value: new_record})
-        return f"-You successfully changed {old_record} in address book"
+
+        self.data[name].change_phone(old_phone, new_phone)
+        return f"-You have successfully changed: {name}'s contact number to {new_phone}."
 
     @staticmethod
     def verify_number(n):
         if not isinstance(n, int):
             raise ValueError("The number of output pages must be number.")
+
         if n <= 0:
             raise ValueError("The number of output pages must not be less than or equal to 0")
 
@@ -238,10 +237,11 @@ class AddressBook(UserDict):
             record = Record(record)
         return self.data.pop(record.name.value, "-Record not found")
 
-a = AddressBook()
-print(a.add_record(['Lesia', '+380932683795', '25.07.1996']))
-print(a.add_record(['Vlad', '+380932683795', '25.07.1995']))
-print(a.add_record(['Jack', '+380932683795', '25.07.1994']))
-print(a)
-lst = a.iterator(5)
-print(next(lst))
+# a = AddressBook()
+# print(a.add_record(['Lesia', '+380932683795', '25.07.1996']))
+# print(a.add_record(['Vlad', '+380932683795', '25.07.1995']))
+# print(a.add_record(['Jack', '+380932683795', '25.07.1994']))
+# print(a)
+# lst = a.iterator(5)
+# print(next(lst))
+# print(a.change_record("Jack", "+380932683795", "+380684115573"))
