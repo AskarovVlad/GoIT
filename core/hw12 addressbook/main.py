@@ -34,12 +34,39 @@ def add_record(user_data):
 
 
 @input_error
+def remove_record(user_data):
+    if len(user_data) < 1:
+        raise IndexError
+    name = user_data[0]
+
+    if len(BOOK.data) == 0:
+        return "-There are no contacts in the phone book." \
+               "\n-If you want to add a contact, enter: add 'name' 'phone number' 'birthday'(optional parameter)."
+
+    return BOOK.remove_record(name)
+
+
+@input_error
 def show_all(*args):
     if len(BOOK.data) == 0:
         return "-There are no contacts in the phone book." \
                "\n-If you want to add a contact, enter: add 'name' 'phone number' 'birthday'(optional parameter)."
     contact_list = [f"{record}" for record in BOOK.data.values()]
     return '\n'.join(contact_list)
+
+
+@input_error
+def add_phone(user_data):
+    if len(user_data) < 2:
+        raise IndexError
+    name = user_data[0]
+    phone = user_data[1]
+
+    if len(BOOK) == 0:
+        return "-There are no contacts in the phone book." \
+               "\n-If you want to add a contact, enter: add 'name' 'phone number' 'birthday'(optional parameter)."
+
+    return BOOK.add_phone_record(name, phone)
 
 
 @input_error
@@ -52,40 +79,114 @@ def change_phone(user_data):
 
     if len(BOOK) == 0:
         return "-There are no contacts in the phone book." \
-               "\n-If you want to add a contact, enter: add 'name' 'phone number'."
-    elif name in BOOK:
-        BOOK.change_record(name, old_phone, new_phone)
-        return BOOK.change_record(name, old_phone, new_phone)
-    else:
-        raise ValueError
+               "\n-If you want to add a contact, enter: add 'name' 'phone number' 'birthday'(optional parameter)."
+
+    return BOOK.change_phone_record(name, old_phone, new_phone)
 
 
 @input_error
-def show_phone(user_data):
+def remove_phone(user_data):
+    if len(user_data) < 2:
+        raise IndexError
+    name = user_data[0]
+    phone = user_data[1]
+
+    if len(BOOK) == 0:
+        return "-There are no contacts in the phone book." \
+               "\n-If you want to add a contact, enter: add 'name' 'phone number' 'birthday'(optional parameter)."
+
+    return BOOK.remove_phone_record(name, phone)
+
+
+@input_error
+def add_birthday(user_data):
+    if len(user_data) < 2:
+        raise IndexError
+    name = user_data[0]
+    birthday = user_data[1]
+
+    if len(BOOK) == 0:
+        return "-There are no contacts in the phone book." \
+               "\n-If you want to add a contact, enter: add 'name' 'phone number' 'birthday'(optional parameter)."
+
+    return BOOK.add_birthday_record(name, birthday)
+
+
+@input_error
+def change_birthday(user_data):
+    if len(user_data) < 2:
+        raise IndexError
+    name = user_data[0]
+    birthday = user_data[1]
+
+    if len(BOOK) == 0:
+        return "-There are no contacts in the phone book." \
+               "\n-If you want to add a contact, enter: add 'name' 'phone number' 'birthday'(optional parameter)."
+
+    return BOOK.change_birthday_record(name, birthday)
+
+
+@input_error
+def remove_birthday(user_data):
     if len(user_data) < 1:
         raise IndexError
-
     name = user_data[0]
 
     if len(BOOK) == 0:
-        return "-Contact book is empty." \
-               "\n-If you want to add a contact, enter: add 'name' 'phone number'."
-    elif name in BOOK:
-        return f"{name}: {BOOK[name].phones}"
-    else:
-        raise ValueError
+        return "-There are no contacts in the phone book." \
+               "\n-If you want to add a contact, enter: add 'name' 'phone number' 'birthday'(optional parameter)."
+
+    return BOOK.remove_birthday_record(name)
+
+
+@input_error
+def search_record(user_data):
+    if len(user_data) < 1:
+        raise IndexError
+    user_data = user_data[0]
+
+    if len(BOOK) == 0:
+        return "-There are no contacts in the phone book." \
+               "\n-If you want to add a contact, enter: add 'name' 'phone number' 'birthday'(optional parameter)."
+
+    return BOOK.search_record(user_data)
+
+
+@input_error
+def advanced_search_record(user_data):
+    if len(user_data) < 1:
+        raise IndexError
+    user_data = user_data[0]
+
+    if len(BOOK) == 0:
+        return "-There are no contacts in the phone book." \
+               "\n-If you want to add a contact, enter: add 'name' 'phone number' 'birthday'(optional parameter)."
+
+    return BOOK.advanced_search_record(user_data)
 
 
 @input_error
 def show_commands(*args):
-    return "-I can such commands as:" \
-           "\n add 'name' 'phone' 'birthday' - Adds record a contact with {name} and {phone number} " \
-           "and {birthday} (optional parameter) to a book." \
-           "\n showall - Show a list of all contacts in the phone book." \
-           "\n phone 'name' - Show a contact with {name}." \
-           "\n changephone 'name' 'old phone number' 'new phone number' - Changes the old phone number " \
+    return "-I can such commands as: " \
+           "\n 1. hello - Greetings message." \
+           "\n 2. add 'name' 'phone' 'birthday' - Adds record the contact with {name} and {phone number} " \
+           "and {birthday} (optional parameter) to the book." \
+           "\n 3. remove 'name' - Removes record {name}." \
+           "\n 4. showall - Show the list of all contacts in the phone book." \
+           "\n 5. addphone 'name' 'phone' - Adds {phone} number to contact {name}." \
+           "\n 6. changephone 'name' 'old phone' 'new phone' - Changes the {old phone} to the {new phone} " \
+           "of the contact {name}." \
+           "\n 7. removephone 'name' 'phone' - Removes the {phone} of the contact {name}." \
+           "\n 8. addbirthday 'name' 'phone' - Adds {birthday} to contact {name}." \
+           "\n 9. changebirthday 'name' 'birthday' - Changes the {old birthday} to the {new birthday} " \
+           "of the contact {name}." \
+           "\n 10. removebirthday 'name' 'birthday' - Removes the {birthday} of the contact {name}." \
+           "\n 11. search 'name' - Searches records by the {name}." \
+           "\n 12. asearch 'name or phone or birthday or multiple characters' - Searches for a records by the " \
+           "specified criteria." \
+           "\n 13. changephone 'name' 'old phone number' 'new phone number' - Changes the old phone number " \
            "to the new phone number {name}." \
-           "\n exit or close or . (dot) or goodbye or bye - Terminates program execution."
+           "\n 14. exit or close or . (dot) or goodbye or bye - Terminates program execution."
 
 
 @input_error
@@ -96,9 +197,16 @@ def exit_func(*args):
 EXIT = (".", "good bye", "goodbye", "close", "exit", 'bye')
 COMMANDS = {'hello': hello,
             'add': add_record,
-            'showall': show_all,
-            'phone': show_phone,
+            'remove': remove_record,
+            'addphone': add_phone,
             'changephone': change_phone,
+            'removephone': remove_phone,
+            'showall': show_all,
+            'search': search_record,
+            'asearch': advanced_search_record,
+            'addbirth': add_birthday,
+            'changebirth': change_birthday,
+            'removebirth': remove_birthday,
             'showcommands': show_commands}
 
 

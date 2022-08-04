@@ -1,4 +1,6 @@
-#from pathlib import Path
+import re
+from pathlib import Path
+from re import findall
 from collections import UserDict
 from datetime import datetime
 
@@ -45,10 +47,10 @@ class Phone(Field):
                 "-Phone must be only a number. Please enter the correct phone (e.g. +380937890123 or 0934567890).")
 
         if len(clean_phone) != 10:
-            raise ValueError("-Invalid lenght phone number. Please enter the correct phone")
+            raise ValueError("-Invalid lenght phone number. Please enter the correct phone.")
 
         if not clean_phone.startswith('0'):
-            raise ValueError("-Phone number must start with '0' or '+380'. Please enter the correct phone")
+            raise ValueError("-Phone number must start with '0' or '+380'. Please enter the correct phone.")
 
     @property
     def value(self):
@@ -80,18 +82,18 @@ class Birthday(Field):
         year = int(value.split('.')[2])
 
         if len(str(year)) != 4:
-            raise ValueError("-Invalid year format. Year must be four-digit number (e.g. 1995)")
+            raise ValueError("-Invalid year format. Year must be four-digit number (e.g. 1995).")
 
         if month < 1 or month > 12:
             raise ValueError("-Invalid month format. Month must be in 1-12 (e.g. 8 or 08).")
 
         if date < 1 or date > 31 and month in [1, 3, 5, 7, 8, 10, 12]:
             raise ValueError(
-                f"-Invalid date fomat. In {datetime(1900, month, 12).strftime('%B')} no more than 31 days (e.g. 7 or 07)")
+                f"-Invalid date fomat. In {datetime(1900, month, 12).strftime('%B')} no more than 31 days (e.g. 7 or 07).")
 
         if date < 1 or date > 30 and month in [4, 6, 9, 11]:
             raise ValueError(
-                f"-Invalid date fomat. In {datetime(1900, month, 12).strftime('%B')} no more than 30 days (e.g. 8 or 08)")
+                f"-Invalid date fomat. In {datetime(1900, month, 12).strftime('%B')} no more than 30 days (e.g. 8 or 08).")
 
         if year % 4 == 0 and month == 2 and 1 > date > 29:
             raise ValueError("-Invalid date format. February of a leap year cannot have more than 29 days.")
@@ -132,7 +134,8 @@ class Record:
         if isinstance(phone, Phone):
             return self.phones.append(phone)
 
-        return self.phones.append(Phone(phone))
+        self.phones.append(Phone(phone))
+        return "-You successfully add new phone number to contact."
 
     def change_phone(self, old_phone, new_phone):
         if not isinstance(old_phone, Phone):
@@ -147,7 +150,7 @@ class Record:
                 self.phones.append(new_phone)
                 return f"-You have successfully changed your phone number to {new_phone}."
         else:
-            return "-Old phone number not found"
+            return "-Old phone number not found."
 
     def remove_phone(self, phone):
         if not isinstance(phone, Phone):
@@ -156,8 +159,23 @@ class Record:
         for phone_number in self.phones:
             if phone_number.value == phone.value:
                 self.phones.remove(phone_number)
-                return f"-Phone number removed"
-        return "-Phone number not found"
+                return f"-Phone number removed."
+        return "-Phone number not found."
+
+    def add_birthday(self, birthday):
+        if self.birthday:
+            return "-Field 'birthday' already exist. \n-If you want to change the date of birth " \
+                   "please enter the command: changebirth 'contact name' 'new date to birth.'"
+        self.birthday = Birthday(birthday)
+        return "-You successfully add date to birth."
+
+    def change_birthday(self, birthday):
+        self.birthday = Birthday(birthday)
+        return f"-You have successfully changed birthday to {birthday}."
+
+    def remove_birthday(self):
+        self.birthday = None
+        return "-Field birthday deleted."
 
     def days_to_birthday(self):
         today = datetime.today().date()
@@ -169,7 +187,7 @@ class Record:
             else:
                 day_to_birth = (birthday.replace(birthday.year + 1) - today).days
 
-            return f"-{day_to_birth} days until birthday"
+            return f"-{day_to_birth} days until birthday."
 
         return """-The number of days cannot be counted. Field "Birthday" is empty."""
 
@@ -195,24 +213,56 @@ class AddressBook(UserDict):
 
         if record.name.value not in self.data:
             self.data.update({record.name.value: record})
-            return f"-You successfully add contact {record} in address book"
+            return f"-You successfully add contact {record} in address book."
         else:
             return f"""-Name '{record.name.value}' already exist in address book."""
 
-    def change_record(self, name, old_phone, new_phone):
+    def add_phone_record(self, name, phone):
         if name not in self.data:
-            return "-Record not found"
+            return f"-Record '{name}' not found."
 
-        self.data[name].change_phone(old_phone, new_phone)
-        return f"-You have successfully changed: {name}'s contact number to {new_phone}."
+        return self.data[name].add_phone(phone)
+
+    def change_phone_record(self, name, old_phone, new_phone):
+        if name not in self.data:
+            return f"-Record '{name}' not found."
+
+        return self.data[name].change_phone(old_phone, new_phone)
+
+    def remove_phone_record(self, name, number):
+        if name not in self.data:
+            return f"-Record '{name}' not found."
+
+        return self.data[name].remove_phone(number)
+
+    def add_birthday_record(self, name, birthday):
+        if name not in self.data:
+            return f"-Record '{name}' not found."
+
+        return self.data[name].add_birthday(birthday)
+
+    def change_birthday_record(self, name, birthday):
+        if name not in self.data:
+            return f"-Record '{name}' not found."
+
+        return self.data[name].change_birthday(birthday)
+
+    def remove_birthday_record(self, name):
+        if name not in self.data:
+            return f"-Record '{name}' not found."
+
+        if not self.data[name].birthday:
+            return f"-Field {name}'s contact 'birthday' is empty."
+
+        return self.data[name].remove_birthday()
 
     @staticmethod
     def verify_number(n):
         if not isinstance(n, int):
-            raise ValueError("The number of output pages must be number.")
+            raise ValueError("-The number of output pages must be number.")
 
         if n <= 0:
-            raise ValueError("The number of output pages must not be less than or equal to 0")
+            raise ValueError("-The number of output pages must not be less than or equal to 0.")
 
     def iterator(self, n=0):
         self.verify_number(n)
@@ -227,21 +277,24 @@ class AddressBook(UserDict):
                 records = records[n:]
                 yield result
 
-        raise StopIteration("StopIterationError. The whole book is on screen.")
+        raise StopIteration("-StopIterationError. The whole book is on screen.")
 
-    def find_record(self, value: Name):
-        return self.data.get(value, "-Record not found")
+    def search_record(self, value):
+        matches = [str(self.data[record]) for record in self.data if value == record]
 
-    def remove_record(self, record):
-        if not isinstance(record, Record):
-            record = Record(record)
-        return self.data.pop(record.name.value, "-Record not found")
+        return "-Record not found." if not matches else "\n".join(matches)
 
-# a = AddressBook()
-# print(a.add_record(['Lesia', '+380932683795', '25.07.1996']))
-# print(a.add_record(['Vlad', '+380932683795', '25.07.1995']))
-# print(a.add_record(['Jack', '+380932683795', '25.07.1994']))
-# print(a)
-# lst = a.iterator(5)
-# print(next(lst))
-# print(a.change_record("Jack", "+380932683795", "+380684115573"))
+    def advanced_search_record(self, value):
+        matches = list()
+        for record in self.data.values():
+            if findall(str(value), str(record), flags=re.IGNORECASE):
+                matches.append(str(record))
+
+        return "-Record not found." if not matches else "\n".join(matches)
+
+    def remove_record(self, name):
+        if name not in self.data:
+            return f"-Record '{name}' not found."
+
+        del self.data[name]
+        return f"-Record {name} deleted."
