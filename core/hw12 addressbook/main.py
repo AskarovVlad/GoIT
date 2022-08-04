@@ -183,7 +183,7 @@ def show_commands(*args):
            "\n 10. removebirthday 'name' 'birthday' - Removes the {birthday} of the contact {name}." \
            "\n 11. search 'name' - Searches records by the {name}." \
            "\n 12. asearch 'name or phone or birthday or multiple characters' - Searches for a records by the " \
-           "specified criteria." \
+           r"specified criteria except special characters like .^$*+?{}[]\|()." \
            "\n 13. changephone 'name' 'old phone number' 'new phone number' - Changes the old phone number " \
            "to the new phone number {name}." \
            "\n 14. exit or close or . (dot) or goodbye or bye - Terminates program execution."
