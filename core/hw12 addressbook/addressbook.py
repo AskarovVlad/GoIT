@@ -286,6 +286,9 @@ class AddressBook(UserDict):
 
     def advanced_search_record(self, value):
         matches = list()
+
+        if [symb for symb in value if symb in r'.^$*+?{}[]\|()']:
+            raise ValueError('-Incorrect search {value}.')
         for record in self.data.values():
             if findall(str(value), str(record), flags=re.IGNORECASE):
                 matches.append(str(record))

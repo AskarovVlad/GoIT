@@ -13,9 +13,9 @@ def input_error(func):
             return '-Please enter a valid command.' \
                   '\n-If you want to see my feature set input: showcommands'
         except ValueError:
-            return '-Please enter a valid name/phone number/date of birth.'
-        except IndexError:
             return "-Enter correct data, please."
+        except IndexError:
+            return '-Please enter a valid name/phone number/date of birth.'
 
     return wrapper
 
