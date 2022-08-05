@@ -1,4 +1,4 @@
-from addressbook import *
+from assistant_bot.addressbook import *
 
 FILE_NAME = 'address-book.bin'
 BOOK = AddressBook()
@@ -127,6 +127,21 @@ def change_birthday(user_data):
 
 
 @input_error
+def date_to_birth(user_data):
+    if len(user_data) < 1:
+        raise IndexError
+    name = user_data[0]
+
+    if len(BOOK) == 0:
+        return "-There are no contacts in the phone book." \
+               "\n-If you want to add a contact, enter: add 'name' 'phone number' 'birthday'(optional parameter)."
+    if name not in BOOK.data:
+        raise ValueError
+
+    return BOOK.data[name].days_to_birthday()
+
+
+@input_error
 def remove_birthday(user_data):
     if len(user_data) < 1:
         raise IndexError
@@ -180,13 +195,14 @@ def show_commands(*args):
            "\n 8. addbirthday 'name' 'phone' - Adds {birthday} to contact {name}." \
            "\n 9. changebirthday 'name' 'birthday' - Changes the {old birthday} to the {new birthday} " \
            "of the contact {name}." \
-           "\n 10. removebirthday 'name' 'birthday' - Removes the {birthday} of the contact {name}." \
-           "\n 11. search 'name' - Searches records by the {name}." \
-           "\n 12. asearch 'name or phone or birthday or multiple characters' - Searches for a records by the " \
+           "\n 10. datetobirth {name} - Calculates the number of days until the birthday contact {name}." \
+           "\n 11. removebirthday 'name' 'birthday' - Removes the {birthday} of the contact {name}." \
+           "\n 12. search 'name' - Searches records by the {name}." \
+           "\n 13. asearch 'name or phone or birthday or multiple characters' - Searches for a records by the " \
            r"specified criteria except special characters like .^$*+?{}[]\|()." \
-           "\n 13. changephone 'name' 'old phone number' 'new phone number' - Changes the old phone number " \
+           "\n 14. changephone 'name' 'old phone number' 'new phone number' - Changes the old phone number " \
            "to the new phone number {name}." \
-           "\n 14. exit or close or . (dot) or goodbye or bye - Terminates program execution."
+           "\n 15. exit or close or . (dot) or goodbye or bye - Terminates program execution."
 
 
 @input_error
@@ -206,6 +222,7 @@ COMMANDS = {'hello': hello,
             'asearch': advanced_search_record,
             'addbirth': add_birthday,
             'changebirth': change_birthday,
+            'datetobirth': date_to_birth,
             'removebirth': remove_birthday,
             'showcommands': show_commands}
 

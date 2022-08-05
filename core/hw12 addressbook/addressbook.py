@@ -187,7 +187,7 @@ class Record:
             else:
                 day_to_birth = (birthday.replace(birthday.year + 1) - today).days
 
-            return f"-{day_to_birth} days until birthday."
+            return f"There are {day_to_birth} days left until the birthday."
 
         return """-The number of days cannot be counted. Field "Birthday" is empty."""
 
