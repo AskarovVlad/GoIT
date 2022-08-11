@@ -4,15 +4,12 @@
 
 
 class Meta(type):
-    children_number = 0
+    # children_number = 0
 
     def __new__(mcs, name, base, attrs):
-        attrs.update({'class_number': mcs.children_number})
+        attrs['class_number'] = mcs.children_number
         mcs.children_number += 1
         return type.__new__(mcs, name, base, attrs)
-
-    # def __call__(cls, *args, **kwargs):
-    #     return super().__call__(*args, **kwargs)
 
 
 Meta.children_number = 0
